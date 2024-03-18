@@ -1,4 +1,4 @@
-from shiny import render  
+from shiny import reactive, render  
 from shiny.express import input, ui  
 from shinywidgets import render_plotly  
 import pandas as pd  
@@ -8,7 +8,6 @@ import palmerpenguins
 
 # Load penguins data into DataFrame
 penguins_df = palmerpenguins.load_penguins()
-
 
 ui.page_opts(title="Pranali's Penguin Data", fillable=True)
 
@@ -82,7 +81,7 @@ with ui.layout_columns():
         @render_plotly
         def plotly_histogram():
             return px.histogram(
-                penguins_df,
+                filtered_data(),
                 x=input.selected_attribute(),
                 nbins=input.plotly_bin_count(),
                 color="species",
@@ -96,7 +95,7 @@ with ui.layout_columns():
         @render.plot(alt="Species Seaborn Histogram")
         def seaborn_histogram():
             seaborn_plot = sns.histplot(
-                data=penguins_df,
+                data=filtered_data(),
                 x=input.selected_attribute(),
                 bins=input.seaborn_bin_count(),
                 multiple="dodge",
@@ -113,7 +112,7 @@ with ui.layout_columns():
         @render_plotly
         def plotly_scatterplot():
             return px.scatter(
-                penguins_df,
+                filtered_data(),
                 title="Plotly Scatterplot",
                 x="body_mass_g",
                 y="bill_length_mm",
@@ -121,22 +120,10 @@ with ui.layout_columns():
                 symbol="species",
             )
 
-
-
-
-# --------------------------------------------------------
-# Reactive calculations and effects
-# --------------------------------------------------------
-
-# Add a reactive calculation to filter the data
-# By decorating the function with @reactive, we can use the function to filter the data
-# The function will be called whenever an input functions used to generate that output changes.
-# Any output that depends on the reactive function (e.g., filtered_data()) will be updated when the data changes.
-
-# Reactive calculation to filter data based on selected species and islands
+# Reactive calculation to filter data based on selected species
 @reactive.calc
 def filtered_data():
     return penguins_df[
-        (penguins_df["species"].isin(input.selected_species_list())) &
-        (penguins_df["island"].isin(input.selected_island_list()))
+        penguins_df["species"].isin(input.selected_species_list())
     ]
+
