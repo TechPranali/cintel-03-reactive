@@ -38,6 +38,15 @@ with ui.sidebar(open="open"):
         inline=True,
     )
 
+     # Creates a checkbox group input for islands
+    ui.input_checkbox_group(
+        "selected_island_list",
+        "Islands",
+        penguins_df["island"].unique().tolist(),
+        selected=penguins_df["island"].unique().tolist(),
+        inline=True,
+    )
+
     # Horizontal rule
     ui.hr()
 
@@ -126,4 +135,3 @@ def filtered_data():
     return penguins_df[
         penguins_df["species"].isin(input.selected_species_list())
     ]
-
