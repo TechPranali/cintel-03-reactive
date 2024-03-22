@@ -2,3 +2,5 @@ pandas
 plotly
 palmerpenguins
 seaborn
+pyarrow
+shinylive
